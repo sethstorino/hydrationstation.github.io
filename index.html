@@ -121,50 +121,48 @@
 	
 	<script>
 		async function fetchData() {
-			// Running into a CORS error. Currently a temporary solution
-			const apiUrl = 'https://cors-anywhere.herokuapp.com/https://hydration-api-1.onrender.com/get';
+		const apiUrl = 'https://cors-anywhere.herokuapp.com/https://hydration-api-1.onrender.com/get';
 
-			try {
-				const response = await fetch(apiUrl);
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				const data = await response.json();
-				console.log('Fetched data:', data); // Log fetched data
-				updateDashboard(data);
-			} catch (error) {
-				console.error('Error fetching data:', error);
-				document.getElementById('bottles-cleaned-today').innerText = 'Failed to fetch data';
+		try {
+			const response = await fetch(apiUrl);
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
+			const data = await response.json();
+			console.log('Fetched data:', data); // Log fetched data
+			updateDashboard(data);
+		} catch (error) {
+			console.error('Error fetching data:', error);
+			document.getElementById('bottles-cleaned-today').innerText = 'Failed to fetch data';
+		}
+	}
+
+	function updateDashboard(data) {
+		if (!data || data.length < 2) {
+			console.error('Data format error:', data);
+			return;
 		}
 
-		function updateDashboard(data) {
-			if (!data || data.length < 2) {
-				console.error('Data format error:', data);
-				return;
-			}
+		console.log("Updating dashboard with data:", data);
 
-			console.log("Updating dashboard with data:", data);
+		// Get the values for the first hydration station placeholder values
+		const bottlesCleanedToday = data[0].bottlescleaned;
+		const bottlesCleanedTotal = data[1].bottlescleaned;
+		const soapLevel = data[0].soaplevel;
+		const sanitationCount = data[0].sanitation;
+		const bottlesFilledToday = data[0].numbottlesfilled;
 
-			// Get the values for the first hydration station placeholder values
-			const bottlesCleanedToday = data[0].bottlescleaned;
-			const bottlesCleanedTotal = data[1].bottlescleaned;
-			const soapLevel = data[0].soaplevel;
-			const sanitationCount = data[0].sanitation;
-			const bottlesFilledToday = data[0].numbottlesfilled;
+		// Update the HTML elements
+		document.getElementById('bottles-cleaned-today').innerText = bottlesCleanedToday; 
+		document.getElementById('bottles-cleaned-total').innerText = bottlesCleanedTotal;
+		document.getElementById('soap-level').innerText = `${soapLevel}%`;
+		document.getElementById('sanitation-count').innerText = sanitationCount;
+		document.getElementById('bottles-filled-today').innerText = bottlesFilledToday;
+	}
 
-			// Update the HTML elements
-			document.getElementById('bottles-cleaned-today').innerText = bottlesCleanedToday; 
-			document.getElementById('bottles-cleaned-total').innerText = bottlesCleanedTotal;
-			document.getElementById('soap-level').innerText = `${soapLevel}%`;
-			document.getElementById('sanitation-count').innerText = sanitationCount;
-			document.getElementById('bottles-filled-today').innerText = bottlesFilledToday;
-		}
+	document.addEventListener('DOMContentLoaded', fetchData);
 
-		document.addEventListener('DOMContentLoaded', fetchData);
 	</script>
-
-
 
 </body>
 </html>
